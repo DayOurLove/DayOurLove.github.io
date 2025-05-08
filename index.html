@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Love you</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="bg_heart">
+    </div>
+    <div id="container">
+        <p class="date-info" id="date">Дата: </p>
+        <p class="date-info" id="dayscount">Дней прошло: </p>
+    </div>   
+    <script>
+        // Задаем константу с датой
+        const TARGET_DATE = "2025-04-12";
+        
+        // Функция для форматирования даты
+        function formatDate(date) {
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+            };
+            return date.toLocaleDateString('ru-RU', options);
+        }
+        
+        // Функция для вычисления разницы в днях
+        function getDaysSinceDate(targetDate) {
+            const target = new Date(targetDate);
+            const now = new Date();
+            console.log(now)
+            // Устанавливаем время на 00:00:00 для точного подсчета дней
+            target.setHours(0, 0, 0, 0);
+            now.setHours(0, 0, 0, 0);
+            
+            const differenceMs = now - target;
+            return Math.floor(differenceMs / (1000 * 60 * 60 * 24));
+        }
+        
+        // Ждем полной загрузки DOM
+        document.addEventListener('DOMContentLoaded', function() {
+            // Получаем элементы DOM после загрузки страницы
+            const dateElement = document.getElementById('date');
+            const daysCountElement = document.getElementById('dayscount');
+            
+            // Вычисляем значения
+            const targetDateObj = new Date(TARGET_DATE);
+            const daysPassed = getDaysSinceDate(TARGET_DATE);
+            
+            // Выводим в элементы
+            dateElement.textContent += formatDate(targetDateObj);
+            daysCountElement.textContent += daysPassed;
+            
+            // Выводим в консоль
+            console.log(`Заданная дата: ${formatDate(targetDateObj)}`);
+            console.log(`Прошло дней: ${daysPassed}`);
+        });
+    </script>
+    <script src="index.js"></script>
+</body>
+</html>
