@@ -9,14 +9,15 @@
 </head>
 <body>
     <div class="bg_heart"></div>
+
     <div id="container">
         <div class="date-block active">
             <h2>Этот день изменил всё ❤️</h2>
             <p class="date-info date-display" data-target-date="2025-04-12"></p>
             <p class="date-info days-count">Дней прошло: </p>
         </div>
-        <div class="date-block">
-            <h2>Судьба носный день нашей встречи ❤️</h2>
+        <div class="date-block next">
+            <h2>Судьбоносный день нашей встречи ❤️</h2>
             <p class="date-info date-display" data-target-date="2025-01-04"></p>
             <p class="date-info days-count">Дней прошло: </p>
         </div>
@@ -39,66 +40,63 @@
         function getDaysSinceDate(targetDate) {
             const target = new Date(targetDate);
             const now = new Date();
-            // Устанавливаем время на 00:00:00 для точного подсчета дней
             target.setHours(0, 0, 0, 0);
             now.setHours(0, 0, 0, 0);
-            
-            const differenceMs = now - target;
-            return Math.floor(differenceMs / (1000 * 60 * 60 * 24));
+            return Math.floor((now - target) / (1000 * 60 * 60 * 24));
         }
         
-        // Функция для переключения между блоками
-        function toggleDateBlocks() {
-            const blocks = document.querySelectorAll('.date-block');
-            let currentIndex = 0;
-            
-            // Находим индекс активного блока
-            blocks.forEach((block, index) => {
-                if (block.classList.contains('active')) {
-                    currentIndex = index;
-                }
-            });
-            
-            // Скрываем текущий блок
-            blocks[currentIndex].classList.remove('active');
-            
-            // Показываем следующий блок (или первый, если текущий последний)
-            const nextIndex = (currentIndex + 1) % blocks.length;
-            blocks[nextIndex].classList.add('active');
-        }
-
-
-        // Ждем полной загрузки DOM
-        document.addEventListener('DOMContentLoaded', function() {
-            // Находим все блоки с датами
-            const dateBlocks = document.querySelectorAll('.date-block');
-            
-            // Обрабатываем каждый блок
-            dateBlocks.forEach(block => {
-                // Находим элементы внутри блока
+        // Инициализация дат
+        function initDates() {
+            document.querySelectorAll('.date-block').forEach(block => {
                 const dateDisplay = block.querySelector('.date-display');
                 const daysCount = block.querySelector('.days-count');
-                
-                // Получаем дату из атрибута data-target-date
                 const targetDate = dateDisplay.getAttribute('data-target-date');
                 
-                // Вычисляем значения
-                const targetDateObj = new Date(targetDate);
-                const daysPassed = getDaysSinceDate(targetDate);
-                
-                // Выводим в элементы
-                dateDisplay.textContent = formatDate(targetDateObj);
-                daysCount.textContent += daysPassed;
-                
-                // Выводим в консоль
-                console.log(`Заданная дата: ${formatDate(targetDateObj)}`);
-                console.log(`Прошло дней: ${daysPassed}`);
+                dateDisplay.textContent = formatDate(new Date(targetDate));
+                daysCount.textContent += getDaysSinceDate(targetDate);
             });
+        }
+        
+        // Функция для переключения карточек
+        function switchCards() {
+            const container = document.getElementById('container');
+            const activeCard = container.querySelector('.date-block.active');
+            const nextCard = container.querySelector('.date-block.next');
+            
+            // Анимация ухода активной карточки вверх
+            activeCard.style.transform = 'translateY(-100px) scale(0.9)';
+            activeCard.style.opacity = '0';
+            
+            // Анимация появления следующей карточки снизу
+            nextCard.style.transform = 'translateY(0) scale(1)';
+            nextCard.style.opacity = '1';
+            
+            // После завершения анимации
+            setTimeout(() => {
+                // Меняем классы
+                activeCard.classList.remove('active');
+                activeCard.classList.add('next');
+                nextCard.classList.remove('next');
+                nextCard.classList.add('active');
+                
+                // Сбрасываем стили трансформации
+                activeCard.style.transform = '';
+                nextCard.style.transform = '';
+                
+                // Перемещаем активную карточку в конец DOM
+                container.appendChild(activeCard);
+            }, 600);
+        }
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            initDates();
+            
+            // Обработчик клика на контейнере
+            document.getElementById('container').addEventListener('click', switchCards);
         });
-
-         // Добавляем обработчик клика на контейнер
-         document.getElementById('container').addEventListener('click', toggleDateBlocks);
     </script>
     <script src="index.js"></script>
+
 </body>
 </html>
