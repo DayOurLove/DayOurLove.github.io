@@ -6,23 +6,25 @@
     <title>Love you</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="index.css">
-    
 </head>
 <body>
-    <div class="bg_heart">
-    </div>
+    <div class="bg_heart"></div>
     <div id="container">
-        <h2>Этот день изменил всё ❤️</h2>
-        <p class="date-info" id="date"></p>
-        <p class="date-info" id="dayscount">Дней прошло: </p>
+        <div class="date-block active">
+            <h2>Этот день изменил всё ❤️</h2>
+            <p class="date-info date-display" data-target-date="2025-04-12"></p>
+            <p class="date-info days-count">Дней прошло: </p>
+        </div>
+        <div class="date-block">
+            <h2>Судьба носный день нашей встречи ❤️</h2>
+            <p class="date-info date-display" data-target-date="2025-01-04"></p>
+            <p class="date-info days-count">Дней прошло: </p>
+        </div>
     </div>   
     <footer>
         P.S. Ты самое лучшее, что со мной случилось
     </footer>
     <script>
-        // Задаем константу с датой
-        const TARGET_DATE = "2025-04-12";
-        
         // Функция для форматирования даты
         function formatDate(date) {
             const options = { 
@@ -37,7 +39,6 @@
         function getDaysSinceDate(targetDate) {
             const target = new Date(targetDate);
             const now = new Date();
-            console.log(now)
             // Устанавливаем время на 00:00:00 для точного подсчета дней
             target.setHours(0, 0, 0, 0);
             now.setHours(0, 0, 0, 0);
@@ -46,24 +47,57 @@
             return Math.floor(differenceMs / (1000 * 60 * 60 * 24));
         }
         
+        // Функция для переключения между блоками
+        function toggleDateBlocks() {
+            const blocks = document.querySelectorAll('.date-block');
+            let currentIndex = 0;
+            
+            // Находим индекс активного блока
+            blocks.forEach((block, index) => {
+                if (block.classList.contains('active')) {
+                    currentIndex = index;
+                }
+            });
+            
+            // Скрываем текущий блок
+            blocks[currentIndex].classList.remove('active');
+            
+            // Показываем следующий блок (или первый, если текущий последний)
+            const nextIndex = (currentIndex + 1) % blocks.length;
+            blocks[nextIndex].classList.add('active');
+        }
+
+
         // Ждем полной загрузки DOM
         document.addEventListener('DOMContentLoaded', function() {
-            // Получаем элементы DOM после загрузки страницы
-            const dateElement = document.getElementById('date');
-            const daysCountElement = document.getElementById('dayscount');
+            // Находим все блоки с датами
+            const dateBlocks = document.querySelectorAll('.date-block');
             
-            // Вычисляем значения
-            const targetDateObj = new Date(TARGET_DATE);
-            const daysPassed = getDaysSinceDate(TARGET_DATE);
-            
-            // Выводим в элементы
-            dateElement.textContent += formatDate(targetDateObj);
-            daysCountElement.textContent += daysPassed;
-            
-            // Выводим в консоль
-            console.log(`Заданная дата: ${formatDate(targetDateObj)}`);
-            console.log(`Прошло дней: ${daysPassed}`);
+            // Обрабатываем каждый блок
+            dateBlocks.forEach(block => {
+                // Находим элементы внутри блока
+                const dateDisplay = block.querySelector('.date-display');
+                const daysCount = block.querySelector('.days-count');
+                
+                // Получаем дату из атрибута data-target-date
+                const targetDate = dateDisplay.getAttribute('data-target-date');
+                
+                // Вычисляем значения
+                const targetDateObj = new Date(targetDate);
+                const daysPassed = getDaysSinceDate(targetDate);
+                
+                // Выводим в элементы
+                dateDisplay.textContent = formatDate(targetDateObj);
+                daysCount.textContent += daysPassed;
+                
+                // Выводим в консоль
+                console.log(`Заданная дата: ${formatDate(targetDateObj)}`);
+                console.log(`Прошло дней: ${daysPassed}`);
+            });
         });
+
+         // Добавляем обработчик клика на контейнер
+         document.getElementById('container').addEventListener('click', toggleDateBlocks);
     </script>
     <script src="index.js"></script>
 </body>
